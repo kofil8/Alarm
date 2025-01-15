@@ -50,7 +50,7 @@ const getUserById = catchAsync(async (req: Request, res: Response) => {
 const getAllUsers = catchAsync(async (_req: Request, res: Response) => {
   const users = await UserService.getAllUsers();
 
-  const data = users.map((user) => ({ ...user, password: undefined }));
+  const data = users.map((user: any) => ({ ...user, password: undefined }));
 
   sendResponse(res, {
     statusCode: httpStatus.OK,

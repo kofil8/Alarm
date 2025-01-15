@@ -1,8 +1,8 @@
-import { Prisma } from "@prisma/client";
+import { PrismaClientValidationError } from "@prisma/client/runtime/library";
 import { IGenericErrorResponse } from "../interfaces/common";
 
 const handleValidationError = (
-  error: Prisma.PrismaClientValidationError
+  error: PrismaClientValidationError
 ): IGenericErrorResponse => {
   const errors = [
     {

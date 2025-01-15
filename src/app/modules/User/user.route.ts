@@ -1,4 +1,3 @@
-import { Role } from '@prisma/client';
 import express from 'express';
 import auth from '../../middlewares/auth';
 import validateRequest from '../../middlewares/validateRequest';
@@ -29,7 +28,7 @@ router.get('/:id', UserController.getUserById);
 
 
 router.delete('/:id',
-  auth(Role.ADMIN),
+  auth(),
   UserController.deleteUser);
 
 export const UserRoute = router;

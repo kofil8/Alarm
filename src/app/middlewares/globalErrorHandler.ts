@@ -1,4 +1,3 @@
-import { Prisma } from "@prisma/client";
 import { NextFunction, Request, Response } from "express";
 import httpStatus from "http-status";
 import { ZodError } from "zod";
@@ -6,9 +5,15 @@ import ApiError from "../../errors/ApiErrors";
 import handleClientError from "../../errors/handleClientError";
 import handleValidationError from "../../errors/handleValidationError";
 import handleZodError from "../../errors/handleZodError";
-import parsePrismaValidationError from "../../errors/parsePrismaValidationError";
 import { IGenericErrorMessage } from "../../interfaces/error";
 import config from "../../config";
+import { 
+PrismaClientKnownRequestError,
+PrismaClientValidationError,
+PrismaClientInitializationError,
+PrismaClientRustPanicError,
+PrismaClientUnknownRequestError 
+} from '@prisma/client/runtime/library';
 
 const GlobalErrorHandler = (
   error: any,
@@ -21,7 +26,7 @@ const GlobalErrorHandler = (
   let errorMessages: IGenericErrorMessage[] = [];
 
   // handle prisma client validation errors
-  if (error instanceof Prisma.PrismaClientValidationError) {
+  if (error instanceof PrismaClientValidationError) {
     const simplifiedError = handleValidationError(error);
     statusCode = simplifiedError.statusCode;
     message = simplifiedError.message;
@@ -37,7 +42,7 @@ const GlobalErrorHandler = (
   }
 
   // Handle Prisma Client Known Request Errors
-  else if (error instanceof Prisma.PrismaClientKnownRequestError) {
+  else if (error instanceof PrismaClientKnownRequestError) {
     const simplifiedError = handleClientError(error);
     statusCode = simplifiedError.statusCode;
     message = simplifiedError.message;
@@ -72,7 +77,7 @@ const GlobalErrorHandler = (
   }
 
   // Prisma Client Initialization Error
-  else if (error instanceof Prisma.PrismaClientInitializationError) {
+  else if (error instanceof PrismaClientInitializationError) {
     statusCode = httpStatus.INTERNAL_SERVER_ERROR;
     message =
       "Failed to initialize Prisma Client. Check your database connection or Prisma configuration.";
@@ -85,7 +90,7 @@ const GlobalErrorHandler = (
   }
 
   // Prisma Client Rust Panic Error
-  else if (error instanceof Prisma.PrismaClientRustPanicError) {
+  else if (error instanceof PrismaClientRustPanicError) {
     statusCode = httpStatus.INTERNAL_SERVER_ERROR;
     message =
       "A critical error occurred in the Prisma engine. Please try again later.";
@@ -98,7 +103,7 @@ const GlobalErrorHandler = (
   }
 
   // Prisma Client Unknown Request Error
-  else if (error instanceof Prisma.PrismaClientUnknownRequestError) {
+  else if (error instanceof PrismaClientUnknownRequestError) {
     statusCode = httpStatus.INTERNAL_SERVER_ERROR;
     message = "An unknown error occurred while processing the request.";
     errorMessages = [
